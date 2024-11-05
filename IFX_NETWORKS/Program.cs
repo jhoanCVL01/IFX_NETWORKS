@@ -40,14 +40,23 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Administrador"));
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin()  // Permite cualquier origen
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
+//builder.Services.AddMvc();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+app.UseCors("AllowAllOrigins"); 
 
-//}
 app.UseSwagger();
 
 app.UseSwaggerUI();
