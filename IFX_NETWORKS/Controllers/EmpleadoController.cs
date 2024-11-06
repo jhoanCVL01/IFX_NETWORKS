@@ -20,14 +20,70 @@ namespace IFX_NETWORKS.Controllers
         [Authorize]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetAll()
         {
-            return await _context.Empleados.ToListAsync();
+            var empleados = await _context.Empleados
+         .Include(e => e.IdEmpresaNavigation)
+         .Select(e => new
+         {
+             e.Id,
+             e.Nombres,
+             e.Apellidos,
+             e.NumeroIdentificacion,
+             e.Direccion,
+             e.Ciudad,
+             e.Telefono,
+             e.Celular,
+             e.Correo,
+             e.FechaVinculacion,
+             e.Cargo,
+             Empresa = new
+             {
+                 e.IdEmpresaNavigation.Id,
+                 e.IdEmpresaNavigation.Nombre,
+                 e.IdEmpresaNavigation.Nit,
+                 e.IdEmpresaNavigation.Direccion,
+                 e.IdEmpresaNavigation.Ciudad,
+                 e.IdEmpresaNavigation.Telefono,
+                 e.IdEmpresaNavigation.Correo,
+                 e.IdEmpresaNavigation.Estado
+             }
+         })
+         .ToListAsync();
+
+            return Ok(empleados);
         }
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<Empleado>> GetById(int id)
+        public async Task<ActionResult<object>> GetById(int id)
         {
-            var empleado = await _context.Empleados.FindAsync(id);
+            var empleado = await _context.Empleados
+       .Include(e => e.IdEmpresaNavigation)
+         .Select(e => new 
+         {
+             e.Id,
+             e.Nombres,
+             e.Apellidos,
+             e.NumeroIdentificacion,
+             e.Direccion,
+             e.Ciudad,
+             e.Telefono,
+             e.Celular,
+             e.Correo,
+             e.FechaVinculacion,
+             e.Cargo,
+             Empresa = new
+             {
+                 e.IdEmpresaNavigation.Id,
+                 e.IdEmpresaNavigation.Nombre,
+                 e.IdEmpresaNavigation.Nit,
+                 e.IdEmpresaNavigation.Direccion,
+                 e.IdEmpresaNavigation.Ciudad,
+                 e.IdEmpresaNavigation.Telefono,
+                 e.IdEmpresaNavigation.Correo,
+                 e.IdEmpresaNavigation.Estado
+             }
+         }) // Incluye la entidad relacionada
+       .FirstOrDefaultAsync(e => e.Id == id);
             if (empleado == null) return NotFound();
             return empleado;
         }
